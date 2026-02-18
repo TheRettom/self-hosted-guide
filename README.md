@@ -4,9 +4,9 @@
 
 ## 📖 Documentation Tree
 * [🌐 Overview](#architecture-overview)
-* [💻 Host OS Setup](./docs/Installing_Arch_Linux/arch-setup.md) - Arch Linux + `linux-hardened`
-* [📦 Container Runtime](./docs/Configuring_Rootless_Podman/rootless-podman.md) - Rootless Podman & Sysctl
-* [🛠 Service Configuration](./docs/Pihole_and_Unbound/pihole-unbound.md) - Pi-hole, Unbound, & Caddy
+* [💻 Host OS Setup](./docs/arch-setup.md) - Arch Linux + `linux-hardened`
+* [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman & Sysctl
+* [🛠 Service Configuration](./Pihole_and_Unbound/pihole-unbound.md) - Pi-hole, Unbound, & Caddy
 * [🛡 Security Roadmap](#security-roadmap)
 
 ## 🛡 Security Roadmap
