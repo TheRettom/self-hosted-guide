@@ -24,7 +24,7 @@ As long as it is functional, it'll probably work. Literally, that's all there is
 
 # Getting Arch Linux and Creating a Bootable Drive / Live Installation
 
-Estimated Time: 20 minutes (depending on internet speeds)
+⌛ Estimated Time: 20 minutes (depending on internet speeds)
 
 This is going to require a few things. There are many ways to install it, but the simplest is to get a thumb drive at least 8GB in size and put the Arch Linux ISO on it. This is the only way I'm documenting it. This guide is assuming that you have a dedicated machine specific for hosting, and will **not** be dual-booting.
 
@@ -62,7 +62,10 @@ lsblk
 
 * Look for the device that matches your USB's size (e.g., 8G, 16G, 32G). It will likely be `sdb` or `sdc`.
 
-* **Warning: You must replace sdX with your actual thumb drive (like sdb or sdc). If you point this at `/dev/sda` (your internal drive), dd will faithfully overwrite your entire operating system __without__ asking "Are you sure?**" Edit the `/dev/sdX` in the command below to whatever matches it and run it:
+> **⚠️ WARNING**
+> You must replace sdX with your actual thumb drive (like sdb or sdc). If you point this at `/dev/sda` (your internal drive), dd will faithfully overwrite your entire operating system __without__ asking "Are you sure?**"
+
+* Edit the `/dev/sdX` in the command below to whatever matches it and run it:
 
 ```
 sudo dd if=archlinux-*.iso of=/dev/sdX bs=4M status=progress oflag=direct
@@ -71,19 +74,19 @@ sudo dd if=archlinux-*.iso of=/dev/sdX bs=4M status=progress oflag=direct
 <details>
 <summary>Breakdown of that command</summary>
 
-* `sudo`: Superuser Do. Writing directly to a device like `/dev/sdX` is a restricted action. Without sudo, Linux will block the command.
+1: `sudo`: Superuser Do. Writing directly to a device like `/dev/sdX` is a restricted action. Without sudo, Linux will block the command.
 
-* `dd`: Data Definition. It copies data from one place to another bit-for-bit.
+2: `dd`: Data Definition. It copies data from one place to another bit-for-bit.
 
-* `if=archlinux-*.iso`: Input File. This tells `dd` where the data is coming from. The asterisk (*) is a wildcard that tells the shell to find the file that matches that pattern, like `archlinux-2026.02.01-x86_64.iso`.
+3: `if=archlinux-*.iso`: Input File. This tells `dd` where the data is coming from. The asterisk (*) is a wildcard that tells the shell to find the file that matches that pattern, like `archlinux-2026.02.01-x86_64.iso`.
 
-* `of=/dev/sdX` Output File. This is the most dangerous part of the command. In Linux, a USB drive is treated as a file located in `/dev/`.
+4: `of=/dev/sdX` Output File. This is the most dangerous part of the command. In Linux, a USB drive is treated as a file located in `/dev/`.
 
-* `bs=4M`: Block Size. This tells dd to read and write in 4-megabyte chunks. The default block size is only 512 bytes. Writing a 1GB ISO in 512-byte increments is like moving a pile of sand with a teaspoon — it works, but it takes forever. Using 4MB is like using a large shovel; it’s much faster and matches the internal "page size" of most USB flash memory.
+5: `bs=4M`: Block Size. This tells dd to read and write in 4-megabyte chunks. The default block size is only 512 bytes. Writing a 1GB ISO in 512-byte increments is like moving a pile of sand with a teaspoon — it works, but it takes forever. Using 4MB is like using a large shovel; it’s much faster and matches the internal "page size" of most USB flash memory.
 
-* `status=progress`: A Visualizer. By default, `dd` is a silent command. You would see a blinking cursor for 10 minutes and wonder if it's frozen. This flag provides a live update of how many bytes have been copied, the elapsed time, and the transfer speed.
+6: `status=progress`: A Visualizer. By default, `dd` is a silent command. You would see a blinking cursor for 10 minutes and wonder if it's frozen. This flag provides a live update of how many bytes have been copied, the elapsed time, and the transfer speed.
 
-* `oflag=direct`: Direct I/O. Normally, Linux uses a "buffer cache" — it says "I've finished writing!" when the data is actually just sitting in your RAM waiting to be sent to the USB. `oflag=direct` tells the kernel to bypass that cache and write directly to the physical USB hardware. This makes the status=progress bar much more accurate and prevents the command from "hanging" at 99% while the system clears the cache.
+7: `oflag=direct`: Direct I/O. Normally, Linux uses a "buffer cache" — it says "I've finished writing!" when the data is actually just sitting in your RAM waiting to be sent to the USB. `oflag=direct` tells the kernel to bypass that cache and write directly to the physical USB hardware. This makes the status=progress bar much more accurate and prevents the command from "hanging" at 99% while the system clears the cache.
 
 </details>
 
@@ -178,15 +181,15 @@ sudo dd if=/path/to/archlinux-*.iso of=/dev/rdiskN bs=1m status=progress
 <details>
 <summary>Breakdown of the command</summary>
 
-* `sudo`: Requires your Mac admin password.
+1: `sudo`: Requires your Mac admin password.
 
-* `if=`: The input file. Drag and drop the ISO file into the terminal window to auto-fill the path.
+2: `if=`: The input file. Drag and drop the ISO file into the terminal window to auto-fill the path.
 
-* `of=`: The output file, as in your thumb drive.
+3: `of=`: The output file, as in your thumb drive.
 
-* `bs=1m`: Sets the block size to 1 megabyte to speed up the transfer.
+4: `bs=1m`: Sets the block size to 1 megabyte to speed up the transfer.
 
-* `status=progress`: Shows you how much has been copied.
+5: `status=progress`: Shows you how much has been copied.
 
 </details>
 
@@ -202,7 +205,7 @@ diskutil eject /dev/diskN
 
 # Installing Arch Linux
 
-Estimated Time: 1 hour
+⌛ Estimated Time: 1 hour
 
 The Arch Linux Wiki already has a fantastic writeup of [installing Arch Linux](https://wiki.archlinux.org/title/Installation_guide). For beginners, however, they may still get a little lost, as a lot of pre-requisite knowledge is needed. I will do my best to give you instructions and explaining along the way. There are different ways to install Arch, as we are in charge of everything for booting it up and installing additional packages.
 
@@ -246,7 +249,7 @@ For Windows systems, if you don't know your motherboard manufacturer, press the 
 
 * The default console keymap is US. Available layouts can be listed with:
 
-### Set the Console Keyboard Layout
+## Set the Console Keyboard Layout
 
 ```
 localectl list-keymaps
@@ -258,7 +261,7 @@ To set the keyboard layout, pass its name to [`loadkeys`](https://man.archlinux.
 loadkeys de-latin1
 ```
 
-### Verify the Boot Mode
+## Verify the Boot Mode
 
 * Verify the boot mode with the following:
 
@@ -274,7 +277,7 @@ cat /sys/firmware/efi/fw_platform_size
 
 If the system did not boot in the mode you desired (UEFI vs BIOS), refer to your motherboard's manual.
 
-### Internet Connection
+## Internet Connection
 
 * If you are using Ethernet, you likely only need to verify your internet connection with `ping`. To set up a network connection in the live environment, go through the following steps:
 
@@ -307,7 +310,7 @@ ID TYPE      DEVICE      SOFT      HARD
 ping ping.archlinux.org
 ```
 
-### Update the System Clock
+## Update the System Clock
 
 The live system needs accurate time to prevent package signature verification failures and TLS certificate errors. The systemd-timesyncd service is enabled by default in the live environment and time will be synchronized automatically once a connection to the internet is established.
 
@@ -317,7 +320,7 @@ The live system needs accurate time to prevent package signature verification fa
 timedatectl
 ```
 
-### Partition and Format the Disks
+## Before Partitioning Disks
 
 **This one of the most important parts of the setup.** If you're here for this guide, you probably won't understand how to do conversion or re-partitioning procedures when you've been running your system for a while. If you are working beyond what the guide is going over with RAID, take time to plan a long-term partitioning scheme. If you want to create any stacked block devices for LVM, system encryption or RAID, do it now. In this guide, I'm only covering the `BTRFS` file system on `GPT` (GUID Partition Table) for a single drive. I'll include steps with SWAP and without, but any partition other than EFI, SWAP, and root is up to you to figure out.
 
@@ -377,7 +380,7 @@ LBA Format  0 : Metadata Size: 0   bytes - Data Size: 512 bytes - Relative Perfo
 LBA Format  1 : Metadata Size: 0   bytes - Data Size: 4096 bytes - Relative Performance: 0x1 Better
 ```
 
-If the `Better` option is available, you will probably want to use that. __**A caveat: Some NVMe SSDs report they support 4K sectors but encounter sporadic instability upon enabling them, especially under heavy random read loads. Make sure to test the new configuration thoroughly before storing data you cannot afford to lose on it. If encountering this issue, simply revert back to a 512 sector configuration.**__
+> If the `Better` option is available, you will probably want to use that. __**A caveat: Some NVMe SSDs report they support 4K sectors but encounter sporadic instability upon enabling them, especially under heavy random read loads. Make sure to test the new configuration thoroughly before storing data you cannot afford to lose on it. If encountering this issue, simply revert back to a 512 sector configuration.**__
 
 * `smartctl` can also display the supported logical block address sizes, but it does not provide user friendly descriptions. Run:
 
@@ -419,7 +422,13 @@ Success formatting namespace:1
 
 </details>
 
-* Now we need to partition and format. If you saw any information saying it's important to have proper alignment for your disks, don't worry, `fdisk` handles it automatically, and `fdisk` has defaults so you can USUALLY press `Enter` to go through it quickly. I'm going to assume we're formatting an NVME, so __**if it's something else, adapt accordingly.**__ Run the following:
+## Partition the Disk
+
+* Now we need to partition. If you saw any information saying it's important to have proper alignment for your disks, don't worry, `fdisk` handles it automatically, and `fdisk` has defaults so you can USUALLY press `Enter` to go through it quickly.
+
+> ### ⚠️ For this guide I'm going to assume we're formatting an NVMe, so __**if it's something else, adapt `/dev/nvme0n1` accordingly.**__
+
+Run the following:
 
 ```
 fdisk /dev/nvme0n1
@@ -441,6 +450,7 @@ fdisk /dev/nvme0n1
 
 <details>
 <summary><strong>Do I want SWAP?</strong></summary>
+
 [SWAP](https://wiki.archlinux.org/title/Swap) space can be used for two purposes: to extend the virtual memory beyond the installed physical memory (RAM), and for suspend-to-disk support. Suspend-to-disk, commonly referred to as Hibernation, is not desirable for a server because resuming from a 16GB+ SWAP image takes significant time. Put simply, for our use-case as a server with high-availability, we don't hibernate or put the computer to sleep. You only want SWAP if you don't have enough physical RAM. __Most__ of these services are computationally cheap, they just need to be available fast. SWAP is much slower than RAM. If you have less than 8GB for a simple setup, maybe consider it. If you have at least 8GB for a simple setup, you're fine without it. If you're running more complex services like [Immich](https://github.com/immich-app/immich), you may want at least 16GB of RAM or more.
 
 **Tl;dr, only if you have less than 8GB of RAM.**
@@ -452,7 +462,7 @@ fdisk /dev/nvme0n1
     * If you don't want [`SWAP`](https://wiki.archlinux.org/title/Swap) space, then press have this be the root partition. Type `+64G` and press `Enter`. It will report `Created a new partition 2 of type 'Linux filesystem' and of size 64 GiB.` Press `t` and it will ask `Partition number (1-2, default 2):`. Press `Enter`. It will ask `Partition type or alias (type L to list all):`. Type `23` and press `Enter`. It will report `Changed type of partition 'Linux filesystem' to 'Linux root (x86-64)'.`
     * If you want [`SWAP`](https://wiki.archlinux.org/title/Swap) space, you need to determine how much is necessary. I'll leave that to you, but 8-16GB is probably fine. In that case, for the last sector of partition 2, type `+xG` replacing `x` with the number of gigabytes you need, then press `Enter`. It will report `Created a new partition 2 of type 'Linux filesystem' and of size x GiB.` Obviously, `x` is whatever space you allocated. Press `t`. It will ask `Partition number (1,2, default 2):`. Press `Enter`. It will ask `Partition type or alias (type L to list all):`. Type `19` and press `Enter`. It will report `Changed type of partition 'Linux filesystem' to 'Linux swap'.`
 
-__**The rest of this guide is listing the example outputs as if you created a SWAP partition. Adapt accordingly!**__
+> ### 💡 __**The rest of this guide is listing the example outputs as if you created a SWAP partition. Adapt accordingly!**__
 
 * **If you didn't create a SWAP partition, ignore this step and skip to the next bullet point**. Let's create the root partition. Press `n`. It will ask `Partition number (3-128, default 3):`. Press `Enter`. It will ask `First sector (x-x, default x):`. Press `Enter`. It will then ask `Last sector, +/-sectors or +/-size{K,M,G,T,P} (x-x, default x):`. Type `+64G` and press `Enter`. It will report `Created a new partition 3 of type 'Linux filesystem' and of size 64 GiB.` Press `t` and it will ask `Partition number (1-3, default 3):`. Press `Enter`. It will ask `Partition type or alias (type L to list all):`. Type `23` and press `Enter`. It will report `Changed type of partition 'Linux filesystem' to 'Linux root (x86-64)'.`
 
@@ -478,13 +488,15 @@ Device             Start        End    Sectors   Size Type
 
 If it looks correct, type `w` and press `Enter` to save our partition scheme.
 
-* Let's format. We want to use [`Btrfs`[(https://wiki.archlinux.org/title/Btrfs)] as a file system instead of [`ext4`](https://wiki.archlinux.org/title/Ext4) or something else.
-    * Run `mkfs.fat -F 32 /dev/nvme0n1p1`
-    * If you created SWAP, run `mkswap /dev/nvme0n1p2`
-    * Run `mkfs.btrfs -L root /dev/nvme0n1p3`
-    * Run `mkfs.btrfs -L home /dev/nvme0n1p4`
+## Format the Partitions
 
-### Install Arch Linux and Packages
+Let's format. We want to use [`Btrfs`](https://wiki.archlinux.org/title/Btrfs) as a file system instead of [`ext4`](https://wiki.archlinux.org/title/Ext4) or something else.
+* Run `mkfs.fat -F 32 /dev/nvme0n1p1`
+* If you created SWAP, run `mkswap /dev/nvme0n1p2`
+* Run `mkfs.btrfs -L root /dev/nvme0n1p3`
+* Run `mkfs.btrfs -L home /dev/nvme0n1p4`
+
+## Creating Btrfs Partitions and Mounting
 
 * Mount the root partition so we're directly modifying files on it. Run the following:
 
@@ -543,6 +555,8 @@ mount /dev/nvme0n1p1 /mnt/efi
 swapon /dev/nvme0n1p2
 ```
 
+## Install Arch Linux onto the System
+
 * No configuration (except for /etc/pacman.d/mirrorlist) gets carried over from the live environment to the installed system. The only mandatory package to install is base, which does not include all tools from the live installation, so installing more packages is frequently necessary. I'm going to do my best to get all you need right here, but [you need to research exactly what you need](https://wiki.archlinux.org/title/Installation_guide#Install_essential_packages).
     * CPU microcode updates, `amd-ucode` or `intel-ucode`, for hardware bug and security fixes
     * We did not cover either parameter, but if you did it on your own, utilities for accessing and managing RAID or LVM
@@ -575,7 +589,7 @@ Look for the line ending in /home. It should contain `nodev,nosuid` in the optio
 arch-chroot /mnt
 ```
 
-### Things to Configure Before Booting
+## Details about `micro`
 
 * You're starting to get how to use a terminal and some of Linux's workings, aren't ya? Since I'm going to use micro, and assume that you are, let me explain some of the hotkeys. Basically, it works like a normal word processor.
     * `Ctrl`+`Shift`+`C` is copy from an external source, as in outside `micro`.
@@ -586,6 +600,8 @@ arch-chroot /mnt
     * `Ctrl`+`Q` is how you close the current file. It will ask to save before actually quitting if you have made changes in the file. You would press `y` to save and quit, `n` to discard changes and quit, or press `Esc` to cancel the closing-file action.
     * `Ctrl`+`F` is how you can find things in a file.
 [Here is the full list of default hotkeys](https://github.com/micro-editor/micro/blob/master/runtime/help/defaultkeys.md).
+
+## Set System Time
 
 * Let's set the system time zone. [Find which timezone applies to you here](https://gist.github.com/adamgen/3f2c30361296bbb45ada43d83c1ac4e5). Edit below and run:
 
@@ -626,6 +642,8 @@ I usually use `Ctrl`+`Q` to save changes and go back to the command line interfa
 systemctl enable systemd-timesyncd.service
 ```
 
+## Regional Settings
+
 * We need to use the correct region and language-specific formatting. Uncomment the UTF-8 locale you need. Run:
 
 ```
@@ -659,6 +677,8 @@ Change as necessary. For example:
 KEYMAP=de-latin1
 ```
 
+## Create a `hostname`
+
 * Assign a consistent, identifiable name to this system. It makes things like SSH easier. Run:
 
 ```
@@ -667,25 +687,35 @@ micro /etc/hostname
 
 I use something simple like `homeserver`, but put the hostname you'll remember in it. And yes, the single word is all that will be in the file.
 
+## Enable Networking
+
 * Enable the `NetworkManager` service, or you won't have internet access. Run:
 
 ```
 systemctl enable networkmanager
 ```
 
-* Creating a new `initramfs` is usually not required, because [`mkinitcpio`](https://wiki.archlinux.org/title/Mkinitcpio) was run on installation of the kernel package with `pacstrap`.
+## Quick Notes
 
-* For [LVM](https://wiki.archlinux.org/title/Install_Arch_Linux_on_LVM#Adding_mkinitcpio_hooks), [system encryption](https://wiki.archlinux.org/title/Dm-crypt), or [RAID](https://wiki.archlinux.org/title/RAID#Configure_mkinitcpio), modify [`mkinitcpio.conf`](https://man.archlinux.org/man/mkinitcpio.conf.5) and recreate the initramfs image. Remember, I didn't cover any of those things. If you have changed the default console keymap, only recreating the initramfs is required. Run:
+* Creating a new `initramfs` at this point is usually not required, because [`mkinitcpio`](https://wiki.archlinux.org/title/Mkinitcpio) was run on installation of the kernel package with `pacstrap`.
+
+* For [LVM](https://wiki.archlinux.org/title/Install_Arch_Linux_on_LVM#Adding_mkinitcpio_hooks), [system encryption](https://wiki.archlinux.org/title/Dm-crypt), or [RAID](https://wiki.archlinux.org/title/RAID#Configure_mkinitcpio), modify [`mkinitcpio.conf`](https://man.archlinux.org/man/mkinitcpio.conf.5) and recreate the initramfs image. Remember, I didn't cover any of those things.
+
+* If you have changed the default console keymap (first thing you would have done after booting live installation), only recreating the initramfs is required. Run:
 
 ```
 mkinitcpio -P
 ```
+
+## Set Root Password
 
 * Set a secure password for the root user for the big-boy commands. This helps protect your system in case of unauthorized access. Run:
 
 ```
 passwd
 ```
+
+## Create New User
 
 Follow the instructions.
 
@@ -712,6 +742,8 @@ useradd -m -G wheel -s /bin/bash username
 passwd username
 ```
 
+## Allowing User to Use Root Commands
+
 Follow the instructions.
 
 * Add `wheel` to the `sudo` list. `sudo` is short for "Superuser Do". By default, the `wheel` group exists, but it doesn't have "permission" to do anything. You have to tell the system that anyone in the wheel group is allowed to use sudo. Instead of editing the main `/etc/sudoers` file which can be overwritten during updates, the we're going to use a drop-in file. Run:
@@ -726,13 +758,7 @@ Add this single line:
 %wheel ALL=(ALL:ALL) ALL
 ```
 
-* Now that we have a user with `sudo` powers, we should lock the root account. This prevents anyone from logging in directly as root, even if they guess the password, forcing everyone to use your named user account instead. Using a root account can be dangerous. Run:
-
-```
-passwd -l root
-```
-
-### Install GRUB (Grand Unified Bootloader)
+## Install GRUB (Grand Unified Bootloader)
 
 * We need to install GRUB so we can allow the system to actually boot Linux. Run:
 
@@ -784,7 +810,15 @@ GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet lsm=landlock,lockdown,yama,integrit
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### Get Into Your System
+## Disable Root Account
+
+* Now that we have a user with `sudo` powers, we should lock the root account. This prevents anyone from logging in directly as root, even if they guess the password, forcing everyone to use your named user account instead. Using a root account can be dangerous. Run:
+
+```
+passwd -l root
+```
+
+## Get Into Your System
 
 We're ready.
 
@@ -810,4 +844,4 @@ lsblk
 
 Your partitions should no longer show anything in the `MOUNTPOINT` column.
 
-* Reboot. Simple type `reboot` and press `Enter`. Assuming this is the only drive on the computer, it should automatically start GRUB, but if not, consult the motherboard's manual and go into the boot menu again, selecting GRUB.
+* Reboot. Simply type `reboot` and press `Enter`. Assuming this is the only drive on the computer, it should automatically start GRUB, but if not, consult the motherboard's manual and go into the boot menu again, selecting GRUB.
