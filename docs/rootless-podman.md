@@ -2,6 +2,11 @@
 
 This document explains how to configure Podman to run without root privileges on Arch Linux Hardened and enable settings for future services. Running rootless ensures that even if a container is compromised, the attacker does not gain root access to the host.
 
+## Notes
+
+* `~` in a directory string refers to the user's home location, which by default should be `/home/$USER`.
+* `%h` is another way for `systemd` to refer to the home directory.
+
 ## Ensure Packages Are Present
 
 * Run the following command:
@@ -104,18 +109,24 @@ Make the specified directory, and if any parent directory is missing, create tho
 
 ## Image Registries
 
-By default, no container image registries are configured in Arch Linux. This means unqualified searches like `podman search httpd` or `podman pull pihole:latest` will not work. To make Podman behave like Docker, configure [containers-registries.conf](https://man.archlinux.org/man/containers-registries.conf.5).
+By default, no container image registries are configured in Arch Linux. This means unqualified searches like `podman search httpd` or `podman pull pihole:latest` will not work. To make Podman behave like Docker, configure [containers-registries.conf](https://man.archlinux.org/man/containers-registries.conf.5). The user directory that Podman reads from is in `~/.config/containers`.
 
 * Run the following command:
 
 ```
-sudo micro /etc/containers/registries.conf.d/10-unqualified-search-registries.conf
+micro ~/.config/containers/registries.conf
 ```
 
 Add the line:
 
 ```
-unqualified-search-registries = ["docker.io"]
+unqualified-search-registries = ["docker.io", "ghcr.io"]                                                                                                  
+                                                                                                                                                          
+[[registry]]                                                                                                                                              
+location = "docker.io"                                                                                                                                    
+                                                                                                                                                          
+[[registry]]                                                                                                                                              
+location = "ghcr.io" 
 ```
 
 ## Storage Settings
