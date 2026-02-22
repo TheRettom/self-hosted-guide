@@ -3,7 +3,7 @@
 **THIS IS FOR ARCH LINUX AND ROOTLESS PODMAN SETUPS.** I wanted to make things easier for people who want to self-host services if they manage to find my GitHub. Why Rootless Podman and Arch Linux? Security and integration. **DO YOU NEED A HIGH-SECURITY HOSTING PLATFORM?** If you're self-hosting services for you and your family, and maybe some friends — probably not. But for those who are paranoid as a standard, or want maximum privacy and security now rather than later, this is for you.
 
 ## 📖 Documentation Tree
-* [💻 Host OS Setup](./docs/Installing_Arch_Linux/arch-setup.md) - Arch Linux + `linux-hardened`
+* [💻 Host OS Setup](./docs/arch-setup.md) - Arch Linux + `linux-hardened`
 * [🛠 Install and Configure Useful Services](./docs/useful-services.md) - Snapshots, SSH, yay
 * [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman Configuration
 * [🔌 Reverse Proxy for Access to Services](./Caddy/caddy-setup.md) - Caddy with Crowdsec
