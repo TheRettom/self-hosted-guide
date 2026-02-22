@@ -129,6 +129,20 @@ location = "docker.io"
 location = "ghcr.io" 
 ```
 
+## Container Settings
+
+Name resolution is handled by subsystems of Podman (`aardvark-dns`), which provide both external DNS (usually through the host's DNS resolver) and container name resolution (e.g. webserver.dns.podman talking to database.dns.podman). Since we will be running Pihole, we need to change the port used by Podman on the host to another port.
+
+```
+micro ~/.config/containers/containers.conf
+```
+
+Add the following:
+
+```
+dns_bind_port = 20053
+```
+
 ## Storage Settings
 
 Since we are on Arch Linux with a modern kernel, Podman will automatically use Native OverlayFS. While there is a one-time delay when building/pulling an image for the first time, the runtime performance is superior to fuse-overlayfs and more stable for rootless users than the specialized `btrfs` driver. Previously I would have suggested `fuse-overlayfs` or `btrfs`, but that is no longer the case. Nothing needs to be reconfigured.
