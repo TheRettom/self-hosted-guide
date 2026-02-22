@@ -895,8 +895,8 @@ Your partitions should no longer show anything in the `MOUNTPOINT` column.
 
 # Next Steps:
 
-[🛠 Install and Configure Useful Services](./docs/useful-services.md) - Snapshots, SSH, yay
+* [🛠 Install and Configure Useful Services](./useful-services.md) - Snapshots, SSH, yay, cron jobs
 
 **or**
 
-[📦 Configure Rootless Podman](./docs/rootless-podman.md)
+* [📦 Configure Rootless Podman](./rootless-podman.md) - Necessary changes for out setup
