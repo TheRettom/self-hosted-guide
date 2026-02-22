@@ -3,11 +3,14 @@
 **THIS IS FOR ARCH LINUX AND ROOTLESS PODMAN SETUPS.** I wanted to make things easier for people who want to self-host services if they manage to find my GitHub. Why Rootless Podman and Arch Linux? Security and integration. **DO YOU NEED A HIGH-SECURITY HOSTING PLATFORM?** If you're self-hosting services for you and your family, and maybe some friends — probably not. But for those who are paranoid as a standard, or want maximum privacy and security now rather than later, this is for you.
 
 ## 📖 Documentation Tree
-* [🌐 Overview](#architecture-overview)
-* [💻 Host OS Setup](./docs/arch-setup.md) - Arch Linux + `linux-hardened`
-* [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman & Sysctl
-* [🛠 Service Configuration](./Pihole_and_Unbound/pihole-unbound.md) - Pi-hole, Unbound, & Caddy
-* [🛡 Security Roadmap](#security-roadmap)
+* [💻 Host OS Setup](./docs/Installing_Arch_Linux/arch-setup.md) - Arch Linux + `linux-hardened`
+* [🛠 Install and Configure Useful Services](./docs/useful-services.md) - Snapshots, SSH, yay
+* [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman Configuration
+* [🔌 Reverse Proxy for Access to Services](./Caddy/caddy-setup.md) - Caddy with Crowdsec
+* [🔰 DNS Setup for Privacy and Security](./DNS/pihole-unbound.md) - Pi-hole and Unbound
+* [🏠 VPN for Home Network Access While Away](./WireGuard/wireguard-setup.md) - WireGuard
+* [🔒 Password Manager](./Vaultwarden/vaultwarden-setup.md) - Vaultwarden
+* [👥 Powerful Photo Storage](./Immich/immich-setup.md) - Immich
 
 ## 🛡 Security Roadmap
 
