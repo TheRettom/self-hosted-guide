@@ -133,6 +133,8 @@ location = "ghcr.io"
 
 Name resolution is handled by subsystems of Podman (`aardvark-dns`), which provide both external DNS (usually through the host's DNS resolver) and container name resolution (e.g. webserver.dns.podman talking to database.dns.podman). Since we will be running Pihole, we need to change the port used by Podman on the host to another port.
 
+* Run the following command:
+
 ```
 micro ~/.config/containers/containers.conf
 ```
