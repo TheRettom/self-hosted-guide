@@ -109,7 +109,7 @@ Make the specified directory, and if any parent directory is missing, create tho
 
 ## Image Registries
 
-By default, no container image registries are configured in Arch Linux. This means unqualified searches like `podman search httpd` or `podman pull pihole:latest` will not work. To make Podman behave like Docker, configure [containers-registries.conf](https://man.archlinux.org/man/containers-registries.conf.5). The user directory that Podman reads from is in `~/.config/containers`.
+By default, no container image registries are configured in Arch Linux. This means unqualified searches like `podman search httpd` or `podman pull pihole:latest` will not work. To make pulling images easier, we need to create a [`registries.conf`](https://man.archlinux.org/man/containers-registries.conf.5). The user directory that Podman reads from is in `~/.config/containers`.
 
 * Run the following command:
 
@@ -155,3 +155,13 @@ Since we are on Arch Linux with a modern kernel, Podman will automatically use N
 podman info | grep -i overlay
 ```
 It should show `graphDriverName: overlay` and `Native Overlay Diff: "true"`.
+
+## Next Step
+
+Before running any service, we need to configure Caddy with Crowdsec.
+
+* [🔌 Reverse Proxy for Access to Services](https://github.com/TheRettom/self-hosted-guide/edit/main/Caddy/caddy-setup.md) - Caddy with Crowdsec
+
+**or**
+
+* [🛠 Install and Configure Useful Services](./useful-services.md) - If you missed setting up useful services like snapshots and cron jobs, set it up. It's optional, but highly recommended.
