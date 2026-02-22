@@ -1,3 +1,41 @@
+# Arch Linux Configuration
+
+<details>
+<summary><strong>Why Arch Linux versus Windows for a server?</strong></summary>
+
+<br>
+
+I will disclose my bias first: I hate Windows. Microsoft has ruined the Windows OS over time in my opinion. More forced telemetry, more forced products, more advertising, and less control and privacy with each iteration. On to the facts:
+
+* Windows views itself as the priority. It will force updates, reboot your server without permission for a "quality patch", and run background telemetry that eats IOPS and minor CPU usage. On Arch, a service runs until you tell it to stop.
+
+* Windows does not have a native space for containerization like Linux. To run Podman or Docker, Windows has to utilize WSL2, a virtual machine. You end up running a Linux kernel inside a Windows OS to run a container. Arch is the native metal; your packets go straight from the NIC to the container with no tax.
+
+* Windows includes a GUI, print spoolers, font parsers, and thousands of legacy APIs like Win32 that create a massive attack surface. Arch gives you full control for setup: If you don't install it, the vulnerability doesn't exist.
+
+* A "light" Windows install idles at ~2GB of RAM. Arch, even with linux-hardened and Btrfs, will idle at ~150-300MB. That’s 1.7GB of RAM we can give back to our services.
+
+Using Arch for this project means your server is exactly what you made it, and nothing more. There are no hidden services, and no telemetry pings.
+
+</details>
+
+<details>
+<summary><strong>Why Arch vs. Other Linux Distros (Debian, Ubuntu, RHEL)</strong></summary>
+
+<br>
+
+This is where the debate gets nuanced.
+
+* While Debian is stable, Arch is early. Most distros (Ubuntu/Debian) patch their software. They take a piece of code, change it to fit their OS, then ship it. Arch ships Vanilla software. In my experience of using Arch as a home server for two years, I've never had anything break because I updated it, even with rolling releases. When Podman dropped with a major security fix or a new Btrfs feature, Arch got it in 24 hours. On Debian "Stable," you might wait months or even years.
+
+* The Arch Linux Wiki is the best technical documentation in the world. Because Arch doesn't use "magïk" configuration scripts, like Ubuntu’s `netplan`, you learn exactly where your config files are and how things work. If your DNS fails, you know it's in /etc/resolv.conf or your container config.
+
+* Arch was one of the first to embrace the modern Btrfs/ZFS stack. Because we are using Reflinks for Podman storage, we need a rolling-release kernel to ensure you have the latest bug fixes for the Btrfs CoW engine. Older "stable" distros often run kernels that have known performance regressions with Btrfs. Reflinks in Btrfs allow for efficient file copying by sharing the same data blocks, which can improve performance when using the overlay filesystem with Podman. This feature is particularly beneficial during operations like "copy ups" when modifying files in a container's root filesystem.
+
+Using Arch for this project means your server is exactly what you made it, and nothing more. No waiting years for security features like native-overlay.
+
+</details>
+
 <details>
 <summary><strong>Why linux-hardened kernel instead of linux-lts or something else?</strong></summary>
 
@@ -22,7 +60,7 @@ We choose linux-hardened because we are building a fortress, not a workstation. 
 As long as it is functional, it'll probably work. Literally, that's all there is to it. Any old PC is fine.
 </details>
 
-# Getting Arch Linux and Creating a Bootable Drive / Live Installation
+## Getting Arch Linux and Creating a Bootable Drive / Live Installation
 
 ⌛ Estimated Time: 20 minutes (depending on internet speeds)
 
@@ -562,11 +600,12 @@ swapon /dev/nvme0n1p2
     * We did not cover either parameter, but if you did it on your own, utilities for accessing and managing RAID or LVM
     * Specific firmware for other devices not included in `linux-firmware`, though that should cover just about everything for most people
     * People can be picky about console text editors. After using a few, I've settled on and prefer `micro`, so I will be installing that and utilizing that editor for the rest of all guides. I also prefer `NetworkManager` so I don't have to manually mess with networks.
+    * A firewall frontend, like `ufw` or `firewalld`. For the sake of minimal packages and granual control, we're sticking with the modern version of `iptables`, `nftables`.
 
 **Do not blindly install packages unless you know you need them.** That includes what I'm listing below. For those who decide not to listen, I'm only going to do my best to include packages that nobody should have a problem having and won't be unnecessary for anyone, but you will have a broken installation without figuring out what else you need. Append (add at the end of my command before pressing `Enter`) with the packages you need for your configuration, especially the vendor-specific CPU microcode (`amd-ucode` or `intel-ucode`).
 
 ```
-pacstrap -K /mnt base linux-hardened linux-firmware btrfs-progs man-db man-pages texinfo sudo grub efibootmgr podman networkmanager micro
+pacstrap -K /mnt base linux-hardened linux-firmware btrfs-progs man-db man-pages texinfo sudo grub efibootmgr podman networkmanager micro iptables-nft
 ```
 
 * We need to make a file that looks at everything we just manually mounted (including the Btrfs subvolumes with the specific nodev,nosuid security flags. The file is a permanent record so the system knows how to boot itself. Run:
@@ -687,12 +726,18 @@ micro /etc/hostname
 
 I use something simple like `homeserver`, but put the hostname you'll remember in it. And yes, the single word is all that will be in the file.
 
-## Enable Networking
+## Enable Services
 
 * Enable the `NetworkManager` service, or you won't have internet access. Run:
 
 ```
 systemctl enable networkmanager
+```
+
+* Enable the firewall. Run:
+
+```
+systemctl enable nftables
 ```
 
 ## Quick Notes
@@ -845,3 +890,13 @@ lsblk
 Your partitions should no longer show anything in the `MOUNTPOINT` column.
 
 * Reboot. Simply type `reboot` and press `Enter`. Assuming this is the only drive on the computer, it should automatically start GRUB, but if not, consult the motherboard's manual and go into the boot menu again, selecting GRUB.
+
+---
+
+# Next Steps:
+
+[🛠 Install and Configure Useful Services](./docs/useful-services.md) - Snapshots, SSH, yay
+
+**or**
+
+[📦 Configure Rootless Podman](./docs/rootless-podman.md)
