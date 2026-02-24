@@ -1,0 +1,37 @@
+[Unit]
+AssertPathExists=%h/.local/share/containers/storage/caddy/Caddyfile
+
+[Container]
+ContainerName=caddy
+#If using a binary, uncomment the normal Caddy image and remove the custom image.
+#Image=caddy:latest
+Image=localhost/caddy-custom
+Exec=/usr/bin/caddy run --config /etc/caddy/Caddyfile
+# Add your email below
+Environment=EMAIL=
+Environment=LOG_FILE=/data/access.log
+Secret=DUCKDNS_API_TOKEN,type=env,target=DUCKDNS_API_TOKEN
+Secret=CROWDSEC_API_KEY,type=env,target=CROWDSEC_API_KEY
+
+# If you ran xcaddy or downloaded it, uncomment the volume mount for the caddy binary.
+# Otherwise, delete the line below and these comments.
+#Volume=%h/.local/share/containers/storage/caddy/caddy:/usr/bin/caddy
+Volume=%h/.local/share/containers/storage/caddy/Caddyfile:/etc/caddy/Caddyfile
+Volume=%h/.local/share/containers/storage/caddy/caddy-config:/config
+Volume=%h/.local/share/containers/storage/caddy/caddy-data:/data
+Volume=%h/.local/share/containers/storage/caddy/log.d:/data/log.d
+Notify=true
+Memory=256m
+
+Network=crowdsec.network
+AddHost=crowdsec:172.17.1.4
+
+HealthCmd=caddy validate --config /etc/caddy/Caddyfile || exit 1
+HealthInterval=30s
+HealthRetries=3
+
+[Install]
+WantedBy=default.target
+
+[Service]
+ExecReload=/usr/bin/podman exec caddy /usr/bin/caddy reload --config /etc/caddy/Caddyfile --force
