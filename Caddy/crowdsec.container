@@ -1,0 +1,17 @@
+[Container]
+ContainerName=crowdsec
+Image=crowdsecurity/crowdsec:latest
+Memory=256m
+Environment=COLLECTIONS=crowdsecurity/caddy crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
+#Secret=BOUNCER_KEY_CADDY,target=BOUNCER_KEY_CADDY
+Network=crowdsec.network
+IP=172.17.1.4
+Volume=%h/.local/share/containers/storage/crowdsec:/etc/crowdsec
+Volume=%h/.local/share/containers/storage/crowdsec/data:/var/lib/crowdsec/data/
+Volume=%h/.local/share/containers/storage/caddy/log.d:/var/log:ro
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Restart=always
