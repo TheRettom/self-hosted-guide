@@ -1,0 +1,27 @@
+{
+        crowdsec {
+                api_url http://crowdsec:8080
+                api_key {env.CROWDSEC_API_KEY}
+        }
+        acme_dns duckdns {env.DUCKDNS_API_TOKEN}
+        dynamic_dns {
+                provider duckdns {env.DUCKDNS_API_TOKEN}
+                domains {
+                        duckdns.org yoursubdomain
+                }
+                versions ipv4
+        }
+}
+
+yoursubdomain.duckdns.org {
+        crowdsec
+        bind fd/3 {
+                protocols h1
+        }
+        bind fd/4 {
+                protocols h1 h2
+        }
+        bind fdgram/5 {
+                protocols h3
+        }
+}
