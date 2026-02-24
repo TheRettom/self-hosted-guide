@@ -1,0 +1,20 @@
+[Socket]
+BindIPv6Only=both
+
+### sockets for the HTTP reverse proxy
+# fd/3
+ListenStream=[::]:80
+
+# fd/4
+ListenStream=[::]:443
+
+# fdgram/5
+ListenDatagram=[::]:443
+
+### socket for the admin API endpoint
+# fd/6
+ListenStream=%t/caddy.sock
+SocketMode=0600
+
+[Install]
+WantedBy=sockets.target
