@@ -95,7 +95,7 @@ There are three ways to get a custom version of Caddy. Caddy alone can't do much
 
 <br>
 
-* Create a Containerfile/Dockerfile in `~/.local/share/containers/storage/caddy`:
+* Create a [Containerfile](./Containerfile)/Dockerfile in `~/.local/share/containers/storage/caddy`:
 
 ```
 micro ~/.local/share/containers/storage/caddy/Containerfile
@@ -195,7 +195,7 @@ chmod +x ~/.config/containers/storage/caddy/caddy
 </details>
 
 ## Create the Socket
-Thanks to [Erik Sjölund](https://github.com/eriksjolund) for [making this easy](https://github.com/eriksjolund/podman-caddy-socket-activation/tree/main) to be done. Create a `caddy.socket` file in `~/.config/systemd/user` with:
+Thanks to [Erik Sjölund](https://github.com/eriksjolund) for [making this easy](https://github.com/eriksjolund/podman-caddy-socket-activation/tree/main) to be done. Create a [`caddy.socket`](./caddy.socket) file in `~/.config/systemd/user` with:
 
 ```
 micro ~/.config/systemd/user/caddy.socket
@@ -399,7 +399,6 @@ Volume=%h/.local/share/containers/storage/crowdsec:/etc/crowdsec
 Volume=%h/.local/share/containers/storage/crowdsec/data:/var/lib/crowdsec/data/
 Volume=%h/.local/share/containers/storage/caddy/log.d:/var/log:ro
 
-
 [Install]
 WantedBy=default.target
 
@@ -407,7 +406,7 @@ WantedBy=default.target
 Restart=always
 ```
 
-* The `Restart=always` value means that systemd should restart the service regardless of why it stopped.  This includes normal exits, crashes, kill signals, and timeouts.
+The `Restart=always` value means that systemd should restart the service regardless of why it stopped.  This includes normal exits, crashes, kill signals, and timeouts.
 
 * Create Crowdsec's [`.network`](./crowdsec.network) file:
 
@@ -433,6 +432,13 @@ systemctl --user daemon-reload
 ```
 systemctl --user start systemd-crowdsec-network
 ```
+
+<details>
+<summary>Why is the name different than we specified?</summary>
+
+By default, the Podman network has the same name as the unit, but with a `systemd-` prefix, i.e. for a network file named `$NAME.network`, the generated Podman network is called `systemd-$NAME`, and the generated service file is `$NAME-network.service`. If the name of a network ends with `.network` when specified in a `.container` file, a Podman network called `systemd-$name` is used, and the generated `systemd` service contains a dependency on the `$name-network.service`.
+
+</details>
 
 * Run the container:
 
