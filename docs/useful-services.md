@@ -108,7 +108,7 @@ If the server is to be exposed to the WAN, this is basically a requirement. Chan
 
 </details>
 
-> 💡 Note: `nftables` is stateless by default in some configs. Ensure you have `ct state established,related accept` in your rules, otherwise, you will be able to send an SSH request but won't receive the reply!
+> 💡 Note: `nftables` is stateless by default in some configs. Ensure you have `ct state established,related accept` in your rules, otherwise, you will be able to send an SSH request but won't receive the reply! I'll add them in the next step.
 
 * Open the firewall for that port. Run:
 
@@ -121,6 +121,8 @@ Under `chain input`, edit the port number if you want and add the line `tcp dpor
 ```
 table inet filter {                                                                                                                                         
   chain input {
+      ct state invalid drop comment "early drop of invalid connections"                                                                                       
+      ct state {established, related} accept comment "allow tracked connections"  
       ... existing rules ...
       tcp dport 39901 accept comment "allow sshd on custom port"
       ... existing rules ...
@@ -213,6 +215,9 @@ sudo systemctl restart sshd.service
 
 > ### ⚠️ **Any time you make changes to SSH configurations after initially connecting, DO NOT close your current terminal session until you have verified the new connection works in a separate window. If there is a typo in your config, your current session is your only way to fix it!**
 
+### WAN Access
+
+If you want to SSH into your server from outside the LAN (local area network, as in your router), then you need to set up port forwarding on your router. I do not cover that on this guide, so refer to your router's manual on how to do that.
 
 ## Systemd Timers
 
