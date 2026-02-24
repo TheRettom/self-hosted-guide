@@ -162,7 +162,7 @@ It should show `graphDriverName: overlay` and `Native Overlay Diff: "true"`.
 
 Before running any service, we need to configure Caddy with Crowdsec.
 
-* [🔌 Reverse Proxy for Access to Services](https://github.com/TheRettom/self-hosted-guide/main/Caddy/README.md) - Caddy with Crowdsec
+* [🔌 Reverse Proxy for Access to Services](https://github.com/TheRettom/self-hosted-guide/Caddy/README.md) - Caddy with Crowdsec
 
 **or**
 
