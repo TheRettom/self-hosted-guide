@@ -166,6 +166,6 @@ Before running any service, we need to configure Caddy with Crowdsec.
 
 **or**
 
-* [🛠 Install and Configure Useful Services](./docs/useful-services.md) - `yay`, SSH, `systemd` timers, `pacman` hooks, tips
+* [🛠 Install and Configure Useful Services](./useful-services.md) - `yay`, SSH, `systemd` timers, `pacman` hooks, tips
 
 If you missed setting up useful services, consider it now. It's optional, but **highly recommended**.
