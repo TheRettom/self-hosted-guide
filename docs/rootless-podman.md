@@ -156,6 +156,8 @@ podman info | grep -i overlay
 ```
 It should show `graphDriverName: overlay` and `Native Overlay Diff: "true"`.
 
+---
+
 ## Next Step
 
 Before running any service, we need to configure Caddy with Crowdsec.
@@ -164,4 +166,5 @@ Before running any service, we need to configure Caddy with Crowdsec.
 
 **or**
 
-* [🛠 Install and Configure Useful Services](./useful-services.md) - If you missed setting up useful services like snapshots and cron jobs, set it up. It's optional, but highly recommended.
+* [🛠 Install and Configure Useful Services](./docs/useful-services.md) - `yay`, SSH, `systemd` timers, `pacman` hooks, tips
+If you missed setting up useful services, set it up. It's optional, but **highly recommended**.
