@@ -599,13 +599,14 @@ swapon /dev/nvme0n1p2
     * CPU microcode updates, `amd-ucode` or `intel-ucode`, for hardware bug and security fixes
     * We did not cover either parameter, but if you did it on your own, utilities for accessing and managing RAID or LVM
     * Specific firmware for other devices not included in `linux-firmware`, though that should cover just about everything for most people
-    * People can be picky about console text editors. After using a few, I've settled on and prefer `micro`, so I will be installing that and utilizing that editor for the rest of all guides. I also prefer `NetworkManager` so I don't have to manually mess with networks.
+    * People can be picky about console text editors. After using a few, I've settled on and prefer `micro`, so I will be installing that and utilizing that editor for the rest of all guides.
+    * I added `NetworkManager` so you don't have to manually mess with networks. If you only have a static Ethernet connection, it's just unnecessary. I'll add both configurations.
     * A firewall frontend, like `ufw` or `firewalld`. For the sake of minimal packages and granual control, we're sticking with the modern version of `iptables`, `nftables`.
 
 **Do not blindly install packages unless you know you need them.** That includes what I'm listing below. For those who decide not to listen, I'm only going to do my best to include packages that nobody should have a problem having and won't be unnecessary for anyone, but you will have a broken installation without figuring out what else you need. Append (add at the end of my command before pressing `Enter`) with the packages you need for your configuration, especially the vendor-specific CPU microcode (`amd-ucode` or `intel-ucode`).
 
 ```
-pacstrap -K /mnt base linux-hardened linux-firmware btrfs-progs man-db man-pages texinfo sudo grub efibootmgr podman networkmanager micro iptables-nft
+pacstrap -K /mnt base linux-hardened linux-firmware btrfs-progs man-db man-pages texinfo sudo grub grub-btrfs timeshift efibootmgr podman networkmanager micro iptables-nft
 ```
 
 * We need to make a file that looks at everything we just manually mounted (including the Btrfs subvolumes with the specific nodev,nosuid security flags. The file is a permanent record so the system knows how to boot itself. Run:
@@ -728,16 +729,114 @@ I use something simple like `homeserver`, but put the hostname you'll remember i
 
 ## Enable Services
 
-* Enable the `NetworkManager` service, or you won't have internet access. Run:
+* Enable internet access.
+
+<details>
+<summary>NetworkManager</summary>
+
+    If you used `NetworkManager` service, run:
 
 ```
 systemctl enable networkmanager
 ```
 
+</details>
+
+<details>
+<summary>systemd-networkd (standard)</summary>
+
+You have two choices for your server's IP. You can use DHCP and set a Static Reservation in your router (easiest), or you can manually define a Static IP in our network config file. For a server, a static assignment is highly recommended to prevent network-wide outages. **Only create a manual configuration instead of DHCP if you know what you are doing.**
+
+* Find the information for your network controller first. Run:
+
+```
+networkctl
+```
+
+For Ethernet, it will start with `en`.
+
+* Create a configuration for a single connection off of Ethernet. Run the following command:
+
+```
+micro /etc/systemd/network/20-wired.network
+```
+
+Input the following and edit as necessary:
+
+```
+[Match]
+Name=en*
+
+[Network]
+Address=192.168.1.200/24
+Gateway=192.168.1.1
+DNS=1.1.1.1
+# Optional: Uncomment DHCP=yes here ONLY if you want it to 
+# fall back to DHCP if the static assignment fails.
+# DHCP=yes
+```
+
+</details>
+
 * Enable the firewall. Run:
 
 ```
 systemctl enable nftables
+```
+
+* Enable Timeshift to create snapshots. Run:
+
+```
+systemctl enable timeshift
+```
+
+We do, however, need to create a retention policy. I believe 5 daily and 3 weekly is sufficient. Edit the JSON config file:
+
+```
+micro /etc/timeshift/timeshift.json
+```
+
+Ensure the following keys are set to true:
+
+```
+  "btrfs_mode" : "true",                                                                                                                                    
+  "include_btrfs_home" : "true",                                                                                                                                                                                                                                                                                                                                                                                 
+  "schedule_weekly" : "true",                                                                                                                               
+  "schedule_daily" : "true",        
+```
+
+Look for these keys and set them to your preference:
+
+```
+    "count_daily" : "5"
+
+    "count_weekly" : "3"
+
+    "count_monthly" : "0"
+```
+
+* Enable GRUB entries for the Snapshots. Run:
+
+```
+systemctl enable grub-btrfsd.service
+```
+
+* To make grub-btrfsd work with Timeshift, edit the service by running:
+
+```
+systemctl edit --full grub-btrfsd
+```
+
+and change the line:
+
+```
+ExecStart=/usr/bin/grub-btrfsd /.snapshots --syslog
+```
+
+to:
+
+```
+ExecStart=/usr/bin/grub-btrfsd --syslog --timeshift-auto
 ```
 
 ## Quick Notes
@@ -899,4 +998,4 @@ Your partitions should no longer show anything in the `MOUNTPOINT` column.
 
 **or**
 
-* [📦 Configure Rootless Podman](./rootless-podman.md) - Necessary changes for out setup
+* [📦 Configure Rootless Podman](./rootless-podman.md) - Necessary changes for our setup
