@@ -2,15 +2,17 @@
 ## Preface
 **THIS IS FOR ARCH LINUX AND ROOTLESS PODMAN SETUPS.** I wanted to make things easier for people who want to self-host services if they manage to find my GitHub. Why Rootless Podman and Arch Linux? Security and integration. **DO YOU NEED A HIGH-SECURITY HOSTING PLATFORM?** If you're self-hosting services for you and your family, and maybe some friends — probably not. But for those who are paranoid as a standard, or want maximum privacy and security now rather than later, this is for you.
 
+The goal with this guide is to have a very secure system with minimal needed maintenance. No matter what, maintenance and learning will be required. If that's not for you, use something simpler.
+
 ## 📖 Documentation Tree
 * [💻 Host OS Setup](./docs/arch-setup.md) - Arch Linux + `linux-hardened`
-* [🛠 Install and Configure Useful Services](./docs/useful-services.md) - Snapshots, SSH, yay
+* [🛠 Install and Configure Useful Services](./docs/useful-services.md) - `yay`, SSH, `systemd` timers, `pacman` hooks, tips
 * [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman Configuration
-* [🔌 Reverse Proxy for Access to Services](./Caddy/caddy-setup.md) - Caddy with Crowdsec
-* [🔰 DNS Setup for Privacy and Security](./DNS/pihole-unbound.md) - Pi-hole and Unbound
-* [🏠 VPN for Home Network Access While Away](./WireGuard/wireguard-setup.md) - WireGuard
-* [🔒 Password Manager](./Vaultwarden/vaultwarden-setup.md) - Vaultwarden
-* [👥 Powerful Photo Storage](./Immich/immich-setup.md) - Immich
+* [🔌 Reverse Proxy for Access to Services](./Caddy/README.md) - Caddy with Crowdsec
+* [🔰 DNS Setup for Privacy and Security](./DNS/README.md) - Pi-hole and Unbound
+* [🏠 VPN for Home Network Access While Away](./WireGuard/README.md) - WireGuard
+* [🔒 Password Manager](./Vaultwarden/README.md) - Vaultwarden
+* [👥 Powerful Photo Storage](./Immich/README.md) - Immich
 
 ## 🛡 Security Roadmap
 
@@ -99,4 +101,11 @@ If you do want a domain, do your own research and don't pick Namecheap just beca
 Because we want security, not ease of setup. A container using `host` networking shares the host's network stack. This means the container has access to all the host's network interfaces and can potentially interact with any service running on the host, regardless of `port mappings` or `firewalls` within the container.  If the container is compromised, the attacker has a much larger attack area and can potentially gain control of the entire `host` system, making the additional security with basic containerization completely useless.<br>
 
 You also lose the ability to easily manage `ports` using Docker or Podman's port mapping (`-p` or `PublishPort=`), so `ports` are managed directly on the host. That can become more complex, especially with multiple containers.
+</details>
+
+<details>
+<summary><strong>What hardware do I need?</strong></summary>
+As long as it is functional, it'll probably work. Literally, that's all there is to it. Any old PC is fine. It doesn't matter if it's from the early 2010s, it'll run like a champ, even for what we need.
+
+HOWEVER, if you plan on running most of the services throughout this guide, I recommend at least 16GB of RAM. If you have less, we'll address that in the Arch Linux installation.
 </details>
