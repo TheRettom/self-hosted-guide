@@ -1,0 +1,22 @@
+[Container]
+ContainerName=unbound-db
+Image=redis:alpine
+Exec=redis-server /usr/local/etc/redis/redis.conf
+Pod=unbound.pod
+User=1000
+Group=1000
+Volume=%h/.local/share/containers/storage/unbound/conf.d/redis.conf:/usr/local/etc/redis/redis.conf
+Volume=%h/.local/share/containers/storage/unbound/healthcheck.sh:/usr/local/sbin/healthcheck.sh:ro
+Memory=512m
+
+HealthCmd=/usr/local/sbin/healthcheck.sh
+HealthInterval=10s
+HealthRetries=5
+HealthStartPeriod=5s
+HealthTimeout=30s
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Restart=always
