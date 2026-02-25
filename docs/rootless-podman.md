@@ -158,7 +158,7 @@ It should show `graphDriverName: overlay` and `Native Overlay Diff: "true"`.
 
 ---
 
-## Next Step
+# Next Step
 
 Before running any service, we need to configure Caddy with Crowdsec.
 
