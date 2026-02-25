@@ -68,7 +68,54 @@ DNSStubListener=no
 sudo systemctl restart systemd-resolved
 ```
 
-# Pihole Setup
+## Open the Port
+
+* Add the following rules to your `input` chain:
+
+```
+sudo micro /etc/nftables.conf
+```
+
+Adjust the subnet as necessary. We only want the local network to use this DNS:
+
+```
+table inet filter {                                                                                                                                         
+  chain input { 
+      ... existing rules ...
+      ip saddr 192.168.1.0/24 udp dport 53 accept
+      ip saddr 192.168.1.0/24 tcp dport 53 accept
+      ... existing rules ...
+  }
+}
+```
+
+> Note: If for whatever reason you don't want only the local network to use the DNS, remove the subnet range portion `ip saddr 192.168.1.0/24`
+
+**Before we reload the firewall configuration:** If there is a typo in `/etc/nftables.conf`, the reload might fail, or worse, leave the firewall in an inconsistent state. Run the following:
+
+```
+sudo nft -c -f /etc/nftables.conf
+```
+
+`-c` means check and will report errors without applying the changes. If all is good, reload `nftables`:
+
+```
+sudo systemctl reload nftables
+```
+
+## Port Forwarding
+
+I am not covering how to do this, as it is very specific to each router. Pihole Documentation already has some routers listed under [`Router setup`](https://docs.pi-hole.net/routers), so start there. All you need to do is forward all local traffic to the homeserver IP under port 53 TCP and UDP.
+
+## Configuring All Devices to Use Pihole as DNS
+
+Same thing, this is determined based on your router. Pihole Documentation already has some routers listed under [`Router setup`](https://docs.pi-hole.net/routers), so start there.
+
+However, there are three methods to do so, [as stated on Pihole's Discourse](https://discourse.pi-hole.net/t/how-do-i-configure-my-devices-to-use-pi-hole-as-their-dns-server/245). Follow that guide based on your available options.
+
+---
+
+# Pihole
 
 Let's start with making the directory.
 
@@ -136,9 +183,11 @@ Restart=always
 
 `IP=` is setting a static IP for the container.
 
+---
+
 # Unbound
 
-We've got a few things to do, especially since we're running Rootless Podman instead of Docker. I had to work with `madnuttah` on why I couldn't get DNSSEC to work, and after a fair bit of troubleshooting, I was able to get it to work with specific changes. Unfortunately that means more steps, but it is more secure.
+We've got a few things to do, especially since we're running Rootless Podman instead of Docker. [I had to work with `madnuttah`](https://github.com/madnuttah/unbound-docker/issues/92) on why I couldn't get DNSSEC to work, and after a fair bit of troubleshooting, I was able to get it to work with specific changes. Unfortunately that means more steps, but it is more secure.
 
 Since there are many containers for the overall service, we will create a Pod.
 
@@ -183,9 +232,8 @@ IP=172.17.0.20
 Pod=unbound.pod
 
 Volume=%h/.local/share/containers/storage/unbound/log.d/unbound.log:/usr/local/unbound/log.d/unbound.log:rw
-Volume=%h/.local/share/containers/storage/unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
 Volume=%h/.local/share/containers/storage/unbound/conf.d:/usr/local/unbound/conf.d
-Volume=%h/.local/share/containers/storage/unbound/unbound.conf:/usr/local/unbound/unbound.conf
+Volume=%h/.local/share/containers/storage/unbound/unbound.conf:/usr/local/unbound/unbound.conf:ro
 Volume=%h/.local/share/containers/storage/unbound/certs.d:/usr/local/unbound/certs.d
 Volume=%h/.local/share/containers/storage/unbound/zones.d/:/usr/local/unbound/zones.d/:rw
 Volume=%h/.local/share/containers/storage/unbound/root.hints:/usr/local/unbound/iana.d/root.hints:rw
@@ -210,7 +258,13 @@ Restart=always
 
 > 📝 Note: The `IP=` key can only be applied to a single network in a Quadlet file. So only one specified `Network=` key can be used with `IP=`, or it won't work. In further configuration of Caddy when we add services, we'll see how we get around this.
 
-* Create the [`unbound.conf`](./unbound.conf) and input the contents:
+* Create the [`unbound.conf`](./unbound.conf):
+
+```
+micro ~/.local/share/containers/storage/unbound/unbound.conf
+```
+
+Input the contents:
 
 ```
 # Use this anywhere in the file to include other text into this file.
@@ -233,7 +287,32 @@ server:
 	module-config: "validator cachedb iterator"
 ```
 
+* Copy the following files and input all of them in `~/.local/share/containers/storage/unbound/conf.d/`:
+    * [`trust-anchor.conf`](./conf.d/trust-anchor.conf)
+    * [`security.conf`](./conf.d/security.conf)
+    * [`remote-control.conf`](./conf.d/remote-control.conf)
+    * [`performance.conf`](./conf.d/performance.conf)
+    * [`logging.conf`](./conf.d/logging.conf)
+    * [`interfaces.conf`](./conf.d/interfaces.conf)
+    * [`cachedb.conf`](./conf.d/cachedb.conf)
+    * [`access-control.conf`](./conf.d/access-control.conf)
 
+* We need a `root.hints` file and a `root.zone` file or DNSSEC will not work.
+
+```
+micro ~/.local/share/containers/storage/unbound/root.hints
+```
+
+Input [from here](https://www.internic.net/domain/named.root).
+
+
+```
+micro ~/.local/share/containers/storage/unbound/root.zone
+```
+
+Input [from here](https://www.internic.net/domain/root.zone).
+
+> Note: I pulled the information for those files from the IANA. It should not need to be updated regularly, but just in case, [here is the link](https://www.iana.org/domains/root/files).
 
 ## Unbound's Redis Socket Container
 
@@ -251,7 +330,7 @@ Image=busybox
 ContainerName=unbound-redis-socket
 Pod=unbound.pod
 RunInit=true
-Exec= /bin/sh -c "chown -R 999:1000 /usr/local/unbound/cachedb.d/" #" && /bin/sh"
+Exec=/bin/sh -c "rm -f /usr/local/unbound/cachedb.d/redis.sock && chmod 777 /usr/local/unbound/cachedb.d/ && chown -R 999:1000 /usr/local/unbound/cachedb.d/"
 Memory=256m
 
 [Install]
@@ -279,10 +358,9 @@ Exec=redis-server /usr/local/etc/redis/redis.conf
 Pod=unbound.pod
 User=1000
 Group=1000
-Volume=%h/.local/share/containers/storage/unbound/redis.conf:/usr/local/etc/redis/redis.conf
+Volume=%h/.local/share/containers/storage/unbound/conf.d/redis.conf:/usr/local/etc/redis/redis.conf
 Volume=%h/.local/share/containers/storage/unbound/healthcheck.sh:/usr/local/sbin/healthcheck.sh:ro
 Memory=512m
-Exec=/bin/sh -c "rm -f /usr/local/unbound/cachedb.d/redis.sock && chmod 777 /usr/local/unbound/cachedb.d/ && chown -R 999:1000 /usr/local/unbound/cachedb.d/"
 
 HealthCmd=/usr/local/sbin/healthcheck.sh
 HealthInterval=10s
@@ -318,16 +396,16 @@ else
 fi
 ```
 
-* Create the redis.conf:
+Make it executable:
 
 ```
-micro ~/.local/share/containers/storage/unbound/redis.conf
+chmod +x ~/.local/share/containers/storage/unbound/healthcheck.sh
 ```
 
-Input the following:
+* Create the [`redis.conf`](./conf.d/redis.conf) and input the contents:
 
 ```
-
+micro ~/.local/share/containers/storage/unbound/conf.d/redis.conf
 ```
 
 ## Unbound's Internal Network
@@ -376,3 +454,34 @@ Sometimes Podman wants network files in the same subfolder of the `~/.config/con
 ```
 ln -s ~/.config/containers/systemd/dns.network ~/.config/containers/systemd/unbound/dns.network
 ```
+
+## Run It!
+
+* Refresh the daemon again:
+
+```
+systemctl --user daemon-reload
+```
+
+* Run the services:
+
+```
+systemctl --user start unbound-pod
+systemctl --user start pihole
+```
+
+* For evidence: See the DNS query cache lowering the response time:
+
+```
+podman exec -it unbound-server drill -p 5335 archlinux.org @127.0.0.1 | grep "Query time"
+```
+
+First time it will be up to a few hundred milliseconds. Second you run the command, 0 milliseconds or close to it.
+
+---
+
+# Next Steps
+
+* [🏠 VPN for Home Network Access While Away](https://github.com/TheRettom/self-hosted-guide/tree/main/WireGuard) - WireGuard
+* [🔒 Password Manager](https://github.com/TheRettom/self-hosted-guide/tree/main/Vaultwarden) - Vaultwarden
+* [👥 Powerful Photo Storage](https://github.com/TheRettom/self-hosted-guide/tree/main/Immich) - Immich
