@@ -434,11 +434,23 @@ systemctl --user start unbound-network.service
 * Create [Unbound's database cache `.volume` file](./cachedb.d.volume):
 
 ```
+micro ~/.config/containers/systemd/unbound/cachedb.d.volume
+```
+
+Input the following:
+
+```
 [Volume]
 VolumeName=cachedb.d
 ```
 
 ## Unbound's Pod
+
+* Create [Unbound's `.pod` file](./unbound.pod):
+
+```
+micro ~/.config/containers/systemd/unbound/unbound.pod
+```
 
 ```
 [Pod]
