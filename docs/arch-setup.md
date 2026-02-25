@@ -765,7 +765,8 @@ Input the following and edit as necessary:
 
 ```
 [Match]
-Name=en*
+Kind=!*
+Type=ether
 
 [Network]
 Address=192.168.1.200/24
