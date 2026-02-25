@@ -86,6 +86,10 @@ sudo systemctl reload nftables
 
 This is optional. After reloading `nftables`, you can verify the rules are active by running `sudo nft list ruleset`. To test if the ports are actually open from the outside, use a tool like `nmap` or a web-based port checker.
 
+## Port Forwarding
+
+I am not covering how to do this, as it is very specific to each router. Pihole Documentation already has some routers listed under [`Router setup`](https://docs.pi-hole.net/routers), so start there. All you need to do is forward all traffic to the homeserver IP under port 80 TCP and 443 TCP/UDP.
+
 ## Getting Caddy with Plugins
 
 There are three ways to get a custom version of Caddy. Caddy alone can't do much, it needs plugins to work with DNS providers, utilize DynamicDNS, and work with Crowdsec. I'm listing all of the ways to get Caddy, but **for the rest of the guide, I'm only working with option 1.** I will still briefly list what is needed to have it work in options 2 and 3.
@@ -173,6 +177,12 @@ mv caddy ~/.config/containers/storage/caddy/caddy
 chmod +x ~/.config/containers/storage/caddy/caddy
 ```
 
+* Pull the image:
+
+```
+podman pull caddy:latest
+```
+
 </details>
 
 <details>
@@ -192,9 +202,15 @@ mv ~/Downloads/caddy_linux_amd64_custom ~/.config/containers/storage/caddy/caddy
 chmod +x ~/.config/containers/storage/caddy/caddy
 ```
 
+* Pull the image:
+
+```
+podman pull caddy:latest
+```
+
 </details>
 
-## Create the Socket
+## Caddy's Socket
 Thanks to [Erik Sjölund](https://github.com/eriksjolund) for [making this easy](https://github.com/eriksjolund/podman-caddy-socket-activation/tree/main) to be done. Create a [`caddy.socket`](./caddy.socket) file in `~/.config/systemd/user` with:
 
 ```
@@ -224,9 +240,9 @@ SocketMode=0600
 [Install]
 WantedBy=sockets.target
 ```
-> Note: For an explanation of systemd specifier "%t", see https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
+> 📝 Note: For an explanation of systemd specifier "%t", see https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
 
-## Create the `caddy.container` File
+## Caddy's Container
 
 * Create Caddy's [`.container`](./caddy.container) file with
 ```
@@ -376,7 +392,11 @@ You probably noticed the previous mentions of `Secret`. That's because we don't 
 DUCKDNS_API_TOKEN="put-your-token-string-here" podman secret create --env=true DUCKDNS_API_TOKEN DUCKDNS_API_TOKEN
 ```
 
-## Configure Crowdsec
+# Crowdsec
+
+The setup is relatively straightforward.
+
+## Crowdsec's Container
 
 * Create Crowdsec's [`.container`](./crowdsec.container) file:
 
@@ -408,6 +428,8 @@ Restart=always
 
 The `Restart=always` value means that systemd should restart the service regardless of why it stopped.  This includes normal exits, crashes, kill signals, and timeouts.
 
+## Crowdsec's Network
+
 * Create Crowdsec's [`.network`](./crowdsec.network) file:
 
 ```
@@ -430,7 +452,7 @@ systemctl --user daemon-reload
 * Create the network:
 
 ```
-systemctl --user start systemd-crowdsec-network
+systemctl --user start crowdsec-network.service
 ```
 
 <details>
@@ -439,6 +461,8 @@ systemctl --user start systemd-crowdsec-network
 By default, the Podman network has the same name as the unit, but with a `systemd-` prefix, i.e. for a network file named `$NAME.network`, the generated Podman network is called `systemd-$NAME`, and the generated service file is `$NAME-network.service`. If the name of a network ends with `.network` when specified in a `.container` file, a Podman network called `systemd-$name` is used, and the generated `systemd` service contains a dependency on the `$name-network.service`.
 
 </details>
+
+## Configuring the Bouncer
 
 * Run the container:
 
@@ -474,6 +498,8 @@ Uncomment the `Secret=` key in `crowdsec.container`.
 systemctl --user daemon-reload && systemctl --user start crowdsec && systemctl --enable caddy.socket
 ```
 
-## Next Step
+---
 
-* [🔰 DNS Setup for Privacy and Security](https://github.com/TheRettom/self-hosted-guide/DNS/README.md) - Pi-hole and Unbound
+# Next Step
+
+* [🔰 DNS Setup for Privacy and Security](https://github.com/TheRettom/self-hosted-guide/tree/main/DNS) - Pi-hole and Unbound
