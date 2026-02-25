@@ -1,0 +1,33 @@
+[Container]
+ContainerName=pihole
+Image=pihole/pihole:latest
+Environment=FTLCONF_dns_listeningMode=all
+Environment=FTLCONF_dns_upstreams="172.17.0.20#5335"
+# Sometimes DNSMASQ_USER needs to be root. Try running it without the variable if you can.
+Environment=DNSMASQ_USER=root
+# Sometimes the log file location needs to be explicitly mentioned in rootless Podman. Run without if you can.
+Environment=FTLCONF_files_log_ftl=/var/log/pihole/FTL.log
+Secret=FTLCONF_webserver_api_password,type=env,target=FTLCONF_webserver_api_password
+
+PublishPort=53:53/tcp
+PublishPort=53:53/udp
+Network=dns.network
+IP=172.17.0.5
+AddHost=unbound:172.17.0.10
+
+Volume=%h/.local/share/containers/storage/pihole/etc-pihole:/etc/pihole:Z
+Volume=%h/.local/share/containers/storage/pihole/logs:/var/log:Z
+# The next two volume mounts are for timezone accuracy
+Volume=/etc/localtime:/etc/localtime:ro
+Volume=/etc/timezone:/etc/timezone:ro
+
+Memory=256m
+HealthCmd=dig +short +norecurse +retry=0 @127.0.0.1 pi.hole || exit 1
+HealthInterval=60s
+HealthStartPeriod=30s
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Restart=always
