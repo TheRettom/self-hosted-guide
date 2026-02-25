@@ -9,10 +9,10 @@
 * [🛠 Install and Configure Useful Services](./docs/useful-services.md) - `yay`, SSH, `systemd` timers, `pacman` hooks, tips
 * [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman Configuration
 * [🔌 Reverse Proxy for Access to Services](./Caddy/README.md) - Caddy with Crowdsec
-* [🔰 DNS Setup for Privacy and Security](./DNS/README.md) - Pi-hole and Unbound
-* [🏠 VPN for Home Network Access While Away](./WireGuard/README.md) - WireGuard
-* [🔒 Password Manager](./Vaultwarden/README.md) - Vaultwarden
-* [👥 Powerful Photo Storage](./Immich/README.md) - Immich
+* [🔰 DNS Setup for Privacy and Security](https://github.com/TheRettom/self-hosted-guide/tree/main/DNS) - Pi-hole and Unbound
+* [🏠 VPN for Home Network Access While Away](https://github.com/TheRettom/self-hosted-guide/tree/main/WireGuard) - WireGuard
+* [🔒 Password Manager](https://github.com/TheRettom/self-hosted-guide/tree/main/Vaultwarden) - Vaultwarden
+* [👥 Powerful Photo Storage](https://github.com/TheRettom/self-hosted-guide/tree/main/Immich) - Immich
 
 ## 🛡 Security Roadmap
 
@@ -35,7 +35,7 @@ My deployment follows a "Defense in Depth" philosophy. Below is the current stat
 
 ---
 
-### FAQ
+# FAQ
 
 <details>
 <summary><strong>Why Arch Linux?</strong></summary>
