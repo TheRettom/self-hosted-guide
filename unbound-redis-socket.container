@@ -1,0 +1,13 @@
+[Container]
+Image=busybox
+ContainerName=unbound-redis-socket
+Pod=unbound.pod
+RunInit=true
+Exec=/bin/sh -c "rm -f /usr/local/unbound/cachedb.d/redis.sock && chmod 777 /usr/local/unbound/cachedb.d/ && chown -R 999:1000 /usr/local/unbound/cachedb.d/"
+Memory=256m
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Restart=always
