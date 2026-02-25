@@ -8,7 +8,7 @@
 * [💻 Host OS Setup](./docs/arch-setup.md) - Arch Linux + `linux-hardened`
 * [🛠 Install and Configure Useful Services](./docs/useful-services.md) - `yay`, SSH, `systemd` timers, `pacman` hooks, tips
 * [📦 Container Runtime](./docs/rootless-podman.md) - Rootless Podman Configuration
-* [🔌 Reverse Proxy for Access to Services](https://github.com/TheRettom/self-hosted-guide/tree/main/Caddy/README.md) - Caddy with Crowdsec
+* [🔌 Reverse Proxy for Access to Services](https://github.com/TheRettom/self-hosted-guide/tree/main/Caddy) - Caddy with Crowdsec
 * [🔰 DNS Setup for Privacy and Security](https://github.com/TheRettom/self-hosted-guide/tree/main/DNS) - Pi-hole and Unbound
 * [🏠 VPN for Home Network Access While Away](https://github.com/TheRettom/self-hosted-guide/tree/main/WireGuard) - WireGuard
 * [🔒 Password Manager](https://github.com/TheRettom/self-hosted-guide/tree/main/Vaultwarden) - Vaultwarden
