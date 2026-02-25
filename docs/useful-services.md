@@ -384,6 +384,8 @@ sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mir
 
 It'll take some time.
 
-## Next Step
+---
+
+# Next Step
 
 * [📦 Configure Rootless Podman](./rootless-podman.md) - Necessary changes for our setup
